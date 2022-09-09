@@ -9,7 +9,7 @@ namespace TwoWayTest
 {
     internal class Person : INotifyPropertyChanged
     {
-        public int ID;
+        public int ID { get; set; }
         private string _fornavn;
         public string Fornavn 
         {

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Databinding5;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,114 +25,75 @@ namespace TwoWayTest
     {
         List<Person> Personer = new List<Person>();
         public int Index = 4;
-
-        Person person = new Person(0, "Svend", "Bendt", 123);
-        private ObservableCollection<Person> DataBase; // Da vi ikke har adgang til en database, 
-                                                       // simulerer vi med denne private liste....
-
-        private ObservableCollection<Person> _publicListe; // Dette er objektet med elementer vi 
+        Person person; //TODO: make nullable
+        private ObservableCollection<Person> publicListe; // Dette er objektet med elementer vi 
                                                            // "deler ud" til brugeren af vores class.
+        DAL DAL = new DAL();
         public MainWindow()
         {
+            
             InitializeComponent();
-
-            DataBase = new ObservableCollection<Person>();
-            DataBase.Add(new Person(0, "Svend", "Bendt", 1234));
-            DataBase.Add(new Person(1, "Bein", "Stagge", -987654321));
-            DataBase.Add(new Person(2, "Turt", "Khorsen", 0));
-            DataBase.Add(new Person(3, "Gill", "Bates", int.MaxValue));
-
-            _publicListe = new ObservableCollection<Person>();
-
-            _publicListe = Get();
-
-            this.DataContext = _publicListe;
-        }
-
-        private ObservableCollection<Person> Get()
-        {
-            _publicListe.Clear();     //Først tømmes den lokale kopi
-
-            //Så løber vi alle elementerne igennem i databasen og overfører til lokal kopi
-            foreach (Person p in DataBase)
-            {
-                _publicListe.Add(p);
-            }
-
-            return _publicListe;
-        }
-
-        private ObservableCollection<Person> Update(Person newPerson)
-        {
-            ObservableCollection<Person> data = Get();
-
-            for (int i = 0; i < data.Count; i++)
-            {
-                if (data[i].ID == newPerson.ID)
-                {
-                    data[i] = newPerson;
-                }
-            }
-            Commit();
-            return data;
+            
+            publicListe = DAL.Get();
+            this.DataContext = publicListe;
         }
 
         private ObservableCollection<Person> Insert(Person person)
         {
-            ObservableCollection<Person> people = Get();
+            ObservableCollection<Person> people = DAL.Get();
             people.Add(person);
-            _publicListe = people;
-            Commit();
+            publicListe = people;
+            DAL.Commit();
             return people;
         }
 
-        private ObservableCollection<Person> DeletePerson(Person Person)
+        private ObservableCollection<Person> DeletePerson(Person person)
         {
-            ObservableCollection<Person> data = Get();
+            ObservableCollection<Person> data = DAL.Get();
 
             for (int i = 0; i < data.Count; i++)
             {
-                if (data[i].ID == Person.ID)
+                if (data[i].ID == person.ID)
                 {
                     data.RemoveAt(i);
                 }
             }
-            _publicListe = data;
-            Commit();
+            publicListe = data;
+            DAL.Commit();
             return data;
-        }
-
-        public void Commit()
-        {
-            DataBase = new ObservableCollection<Person>(_publicListe);
         }
 
         private void VisDataBtn_Click(object sender, RoutedEventArgs e)
         {
-            string PersonData = person.Fornavn +
+            string PersonData = FornavnTxtbox.Text +
                 " " +
-                person.Efternavn +
+                EfternavnTxtbox.Text +
                 " har en formue på " +
-                person.Formue +
+                FormueTxtbox.Text +
                 " Kr.";
-
+            person.Fornavn = FornavnTxtbox.Text;
+            person.Efternavn = EfternavnTxtbox.Text;
+            person.Formue = Convert.ToInt32(FormueTxtbox.Text);
+            person.ID = Convert.ToInt32(IDTxtbox.Text);
             MessageBox.Show(PersonData);
         }
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
             person.Formue++;
+            DAL.Commit();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             DeletePerson(person);
-            Commit();
-            
+            DAL.Commit();
         }
 
         private void Get_Click(object sender, RoutedEventArgs e)
         {
+            publicListe.Clear();
+            publicListe = DAL.Get();
         }
 
         private void InsertBtn_Click(object sender, RoutedEventArgs e)
@@ -139,12 +102,12 @@ namespace TwoWayTest
             {
                 Person person = new Person(Index + 1, FornavnTxtbox.Text, EfternavnTxtbox.Text, int.Parse(FormueTxtbox.Text));
                 Insert(person);
+                DAL.Commit();
             }
             catch (FormatException)
             {
                 Console.WriteLine("Format exception");
             }
-            
         }
     }
 }

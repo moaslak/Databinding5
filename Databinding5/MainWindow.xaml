@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TwoWayTest"
+        xmlns:local="clr-namespace:TwoWayTest" d:DataContext="{d:DesignInstance Type=local:Person}"
         mc:Ignorable="d"
         Title="MainWindow" Height="Auto" Width="Auto">
     <Window.Resources>
@@ -35,10 +35,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBox Text="{Binding Fornavn}" Grid.Column="1" Grid.Row="0" Width="100" Name="FornavnTxtbox"/>
-        <TextBox Text="{Binding Efternavn}" Grid.Column="1" Grid.Row="1" Width="100" Name="EfternavnTxtbox"/>
-        <TextBox Text="{Binding Formue}" Grid.Column="1" Grid.Row="2" Width="100" Name="FormueTxtbox"/>
-
+        <TextBox Text="{Binding SelectedItem.Fornavn, ElementName=DataGrid}" Grid.Column="1" Grid.Row="0" Width="100" Name="FornavnTxtbox"/>
+        <TextBox Text="{Binding SelectedItem.Efternavn, ElementName=DataGrid}" Grid.Column="1" Grid.Row="1" Width="100" Name="EfternavnTxtbox"/>
+        <TextBox Text="{Binding SelectedItem.Formue, ElementName=DataGrid}" Grid.Column="1" Grid.Row="2" Width="100" Name="FormueTxtbox"/>
+        <TextBox Text="{Binding SelectedItem.ID, ElementName=DataGrid}" Grid.Column="1" Grid.Row="3" Width="100" Visibility="Hidden" Name="IDTxtbox"/>
+        
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TxtBlockFornavn">Fornavn</TextBlock>
         <TextBlock Grid.Column="0" Grid.Row="1" Name="TxtBlockEfternavn">Efternavn</TextBlock>
         <TextBlock Grid.Column="0" Grid.Row="2" Name="TxtBlockFormue">Formue</TextBlock>
@@ -51,7 +52,7 @@
         <Button Grid.Column="1" Grid.Row="3" Width="100" Height="20" Content="Delete" Name="DeleteBtn" VerticalAlignment="Top" HorizontalAlignment="Right" Click="Delete_Click"></Button>
         <Button Grid.Column="1" Grid.Row="3" Width="100" Content="Insert" Name="InsertBtn" HorizontalAlignment="Right" Margin="0,40,0,0" Click="InsertBtn_Click"/>
 
-        <DataGrid Grid.Column="1" Grid.Row="4" AutoGenerateColumns="True" ItemsSource="{Binding}"></DataGrid>
+        <DataGrid x:Name="DataGrid" Grid.Column="1" Grid.Row="4" AutoGenerateColumns="True" ItemsSource="{Binding}"></DataGrid>
     </Grid>
 
 </Window>
